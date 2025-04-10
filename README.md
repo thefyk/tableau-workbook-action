@@ -66,7 +66,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: 'Tableau Workbook Action' 
-        uses: jayamanikharyono/tableau-workbook-action@v1.4
+        uses: thefyk/tableau-workbook-action@v1.4
         env:
           USERNAME: ${{ secrets.USERNAME }}
           PASSWORD: ${{ secrets.PASSWORD }}
