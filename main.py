@@ -74,13 +74,18 @@ def submit_workbook(workbook_schema, file_path, env):
     if env != 'production':
         project_path = 'staging/' + workbook_schema['project_path']
 
+
+    logging.info('Setting Tableau API')
     tableau_api = TableauApi(os.environ['USERNAME'],
                             os.environ['PASSWORD'],
                             os.environ['TABLEAU_URL'] + '/api/',
                             os.environ['TABLEAU_URL'],
                             os.environ['SITE_ID'])
+
+    logging.info('Getting Tableau Project ID')
     project_id = tableau_api.get_project_id_by_path_with_tree(project_path)
 
+    logging.info(f'Project ID: {project_id}')
     if project_id is None:
         logging.info("Existing project on a given path doesn't exist, creating new project")
         project_id = tableau_api.create_project_by_path(project_path)
@@ -90,12 +95,14 @@ def submit_workbook(workbook_schema, file_path, env):
     tags = None
     description = None
 
+    logging.info(f'Setting Options')
     if 'option' in workbook_schema:
         hidden_views = workbook_schema['option']['hidden_views'] if 'hidden_views' in workbook_schema['option'] else None
         show_tabs = workbook_schema['option']['show_tabs'] if 'show_tabs' in workbook_schema['option'] else False
         tags = workbook_schema['option']['tags'] if 'tags' in workbook_schema['option'] else None
         description = workbook_schema['option']['description'] if 'description' in workbook_schema['option'] else None
 
+    logging.info(f'Publishing Workbook')
     new_workbook = tableau_api.publish_workbook(name =  workbook_schema['name'],
                                                 project_id = project_id,
                                                 file_path = file_path,
@@ -125,18 +132,13 @@ def main(args):
         for file in addmodified_files:
             if file in full_schema_config['workbooks'].keys():
                 workbook_schema = full_schema_config['workbooks'][file]
-                try:
-                    logging.info(f"Publishing workbook : { workbook_schema['project_path'] + '/' + workbook_schema['name'] } to Tableau")
-                    project_path, new_workbook = submit_workbook(workbook_schema,
-                                                                 args.workbook_dir + "/" + file,
-                                                                 args.env)
-                    logging.info(f"Workbook : { project_path } Published to Tableau")
-                    list_message.append(f"Workbook : { project_path } published to Tableau  :heavy_check_mark:")
-                except Exception as e:
-                    logging.info(f"Error publishing workbook { workbook_schema['name'] }")
-                    logging.error(e)
-                    list_message.append(f"Workbook : { workbook_schema['name'] } not published to Tableau   :x:")
-                    status = False
+                logging.info(f"Publishing workbook : { workbook_schema['project_path'] + '/' + workbook_schema['name'] } to Tableau")
+                project_path, new_workbook = submit_workbook(workbook_schema,
+                                                                args.workbook_dir + "/" + file,
+                                                                args.env)
+                logging.info(f"Workbook : { project_path } Published to Tableau")
+                list_message.append(f"Workbook : { project_path } published to Tableau  :heavy_check_mark:")
+
             else:
                 logging.info(f"Skip publishing workbook { workbook_schema['name'] } not listed in config files")
 
