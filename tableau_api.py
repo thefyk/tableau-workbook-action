@@ -21,9 +21,8 @@ logging.basicConfig(format='%(asctime)s %(message)s')
 
 
 class TableauApi:
-    def __init__(self, username, password, tableau_api_url, tableau_url, site_id):
-        self.username = username
-        self.password = password
+    def __init__(self, token, tableau_api_url, tableau_url, site_id):
+        self.token = token
         self.tableau_api_url = tableau_api_url
         self.tableau_url = tableau_url
         self.site_id = site_id
@@ -42,7 +41,7 @@ class TableauApi:
 
 
     def get_all_projects(self):
-        token = self.sign_in()
+        token = self.token
         headers = {
             'X-Tableau-Auth': token
         }
