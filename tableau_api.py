@@ -21,17 +21,17 @@ logging.basicConfig(format='%(asctime)s %(message)s')
 
 
 class TableauApi:
-    def __init__(self, token, tableau_api_url, tableau_url, site_id):
-        self.token = token
+    def __init__(self, patName, pat, tableau_api_url, tableau_url, site_id):
+        self.patName = patName
+        self.pat = pat
         self.tableau_api_url = tableau_api_url
         self.tableau_url = tableau_url
         self.site_id = site_id
 
-
     def sign_in(self):
         payload = \
         f"""<tsRequest>
-          <credentials name="{ self.username }" password="{ self.password }" >
+        <credentials personalAccessTokenName="{ self.patName }" personalAccessTokenSecret="{ self.pat }" >
             <site contentUrl="" />
           </credentials>
         </tsRequest>"""
@@ -41,7 +41,7 @@ class TableauApi:
 
 
     def get_all_projects(self):
-        token = self.token
+        token = self.sign_in()
         headers = {
             'X-Tableau-Auth': token
         }
