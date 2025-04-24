@@ -76,7 +76,8 @@ def submit_workbook(workbook_schema, file_path, env):
 
 
     logging.info('Setting Tableau API')
-    logging.error(f'Token: {os.environ['TOKEN']}')
+    token = os.environ['TOKEN']
+    logging.error(token)
     tableau_api = TableauApi(os.environ['TOKEN'],
                             os.environ['TABLEAU_URL'] + '/api/',
                             os.environ['TABLEAU_URL'],
