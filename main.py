@@ -79,6 +79,9 @@ def submit_workbook(workbook_schema, file_path, env):
 
     base_project = os.environ['BASE_PROJECT']
     project_path = f'{base_project}/{environment_project}'
+    sub_path = workbook_schema.get('project_path')
+    if sub_path:
+        project_path = f'{project_path}/{sub_path}'
 
     logging.info('Setting Tableau API')
     token = os.environ['PAT']
