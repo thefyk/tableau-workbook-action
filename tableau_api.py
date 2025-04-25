@@ -148,12 +148,11 @@ class TableauApi:
         return last_project_id
 
 
-    # Still figuring out how to put description in workbook via this api
     def publish_workbook(self, name, project_id, file_path, hidden_views = None, show_tabs = False, tags = None, description = None):
         tableau_auth = TSC.PersonalAccessTokenAuth(self.pat_name, self.pat, self.site_name)
         server = TSC.Server(self.tableau_url)
         server.auth.sign_in(tableau_auth)
-        new_workbook = TSC.WorkbookItem(name = name, project_id = project_id, show_tabs=show_tabs)
+        new_workbook = TSC.WorkbookItem(name = name, project_id = project_id, show_tabs=show_tabs, description=description)
         new_workbook = server.workbooks.publish(new_workbook, file_path, TSC.Server.PublishMode.Overwrite, hidden_views=hidden_views)
 
         if tags is not None:
