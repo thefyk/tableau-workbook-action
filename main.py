@@ -71,9 +71,13 @@ def get_addmodified_files(repo_token):
 
 
 def submit_workbook(workbook_schema, file_path, env):
-    if env != 'production':
-        project_path = 'staging/' + workbook_schema['project_path']
+    environment = os.environ['ENVIRONMENT']
 
+    environment_project = 'Stage'
+    if environment == 'prod':
+        environment_project = 'Prod'
+
+    project_path = f'VIZIO Datalake/{environment_project}'
 
     logging.info('Setting Tableau API')
     token = os.environ['PAT']
@@ -87,6 +91,11 @@ def submit_workbook(workbook_schema, file_path, env):
 
     logging.info('Getting Tableau Project ID')
     project_id = os.environ['PROJECT_ID']
+
+    project_id = tableau_api.get_project_id_by_path_with_tree(project_path)
+    if project_id is None:
+            logging.info("Existing project on a given path doesn't exist, creating new project")
+            project_id = tableau_api.create_project_by_path(project_path)
 
     logging.info(f'Project ID: {project_id}')
 
