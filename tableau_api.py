@@ -152,7 +152,8 @@ class TableauApi:
         tableau_auth = TSC.PersonalAccessTokenAuth(self.pat_name, self.pat, self.site_name)
         server = TSC.Server(self.tableau_url)
         server.auth.sign_in(tableau_auth)
-        new_workbook = TSC.WorkbookItem(name = name, project_id = project_id, show_tabs=show_tabs, description=description)
+        new_workbook = TSC.WorkbookItem(name = name, project_id = project_id, show_tabs=show_tabs)
+        setattr(new_workbook, 'description', description)
         new_workbook = server.workbooks.publish(new_workbook, file_path, TSC.Server.PublishMode.Overwrite, hidden_views=hidden_views)
 
         if tags is not None:
