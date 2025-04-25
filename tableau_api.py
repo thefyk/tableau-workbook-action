@@ -32,7 +32,7 @@ class TableauApi:
     def sign_in(self):
         payload = \
         f"""<tsRequest>
-        <credentials personalAccessTokenName="{ self.patName }" personalAccessTokenSecret="{ self.pat }" >
+        <credentials personalAccessTokenName="{ self.pat_name }" personalAccessTokenSecret="{ self.pat }" >
             <site contentUrl="" />
           </credentials>
         </tsRequest>"""
