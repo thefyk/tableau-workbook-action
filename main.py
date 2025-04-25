@@ -77,7 +77,7 @@ def submit_workbook(workbook_schema, file_path, env):
     if environment == 'prod':
         environment_project = 'Prod'
 
-    project_path = f'VIZIO Datalake/{environment_project}'
+    project_path = f'VIZIO Datalake/{environment_project}/'
 
     logging.info('Setting Tableau API')
     token = os.environ['PAT']
