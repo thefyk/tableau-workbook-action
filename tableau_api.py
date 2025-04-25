@@ -21,12 +21,13 @@ logging.basicConfig(format='%(asctime)s %(message)s')
 
 
 class TableauApi:
-    def __init__(self, patName, pat, tableau_api_url, tableau_url, site_id):
-        self.patName = patName
+    def __init__(self, pat_name, pat, tableau_api_url, tableau_url, site_id, site_name):
+        self.pat_name = pat_name
         self.pat = pat
         self.tableau_api_url = tableau_api_url
         self.tableau_url = tableau_url
         self.site_id = site_id
+        self.site_name = site_name
 
     def sign_in(self):
         payload = \
@@ -149,7 +150,7 @@ class TableauApi:
 
     # Still figuring out how to put description in workbook via this api
     def publish_workbook(self, name, project_id, file_path, hidden_views = None, show_tabs = False, tags = None, description = None):
-        tableau_auth = TSC.TableauAuth(self.username, self.password)
+        tableau_auth = TSC.PersonalAccessTokenAuth(self.pat_name, self.pat, self.site_name)
         server = TSC.Server(self.tableau_url)
         server.auth.sign_in(tableau_auth)
         new_workbook = TSC.WorkbookItem(name = name, project_id = project_id, show_tabs=show_tabs)

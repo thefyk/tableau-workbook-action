@@ -82,7 +82,8 @@ def submit_workbook(workbook_schema, file_path, env):
                             os.environ['PAT'],
                             os.environ['TABLEAU_URL'] + '/api/',
                             os.environ['TABLEAU_URL'],
-                            os.environ['SITE_ID'])
+                            os.environ['SITE_ID'],
+                            os.environ['SITE_NAME'])
 
     logging.info('Getting Tableau Project ID')
     project_id = os.environ['PROJECT_ID']
