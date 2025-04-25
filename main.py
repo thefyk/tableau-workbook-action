@@ -85,12 +85,9 @@ def submit_workbook(workbook_schema, file_path, env):
                             os.environ['SITE_ID'])
 
     logging.info('Getting Tableau Project ID')
-    project_id = tableau_api.get_project_id_by_path_with_tree(project_path)
+    project_id = os.environ['PROJECT_ID']
 
     logging.info(f'Project ID: {project_id}')
-    if project_id is None:
-        logging.info("Existing project on a given path doesn't exist, creating new project")
-        project_id = tableau_api.create_project_by_path(project_path)
 
     hidden_views = None
     show_tabs = False
