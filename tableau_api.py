@@ -140,7 +140,7 @@ class TableauApi:
                                           content_permissions=TSC.ProjectItem.ContentPermissions.ManagedByOwner,
                                           parent_id=last_project_id)
 
-            tableau_auth = TSC.TableauAuth(self.username, self.password)
+            tableau_auth = TSC.PersonalAccessTokenAuth(self.pat_name, self.pat, self.site_name)
             server = TSC.Server(self.tableau_url)
             with server.auth.sign_in(tableau_auth):
                 new_project = server.projects.create(new_project)
