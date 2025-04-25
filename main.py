@@ -77,7 +77,8 @@ def submit_workbook(workbook_schema, file_path, env):
     if environment == 'prod':
         environment_project = 'Prod'
 
-    project_path = f'VIZIO Datalake/{environment_project}'
+    base_project = os.environ['BASE_PROJECT']
+    project_path = f'{base_project}/{environment_project}'
 
     logging.info('Setting Tableau API')
     token = os.environ['PAT']
@@ -90,8 +91,6 @@ def submit_workbook(workbook_schema, file_path, env):
                             os.environ['SITE_NAME'])
 
     logging.info('Getting Tableau Project ID')
-    project_id = os.environ['PROJECT_ID']
-
     project_id = tableau_api.get_project_id_by_path_with_tree(project_path)
     if project_id is None:
             logging.info("Existing project on a given path doesn't exist, creating new project")
