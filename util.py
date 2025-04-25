@@ -48,14 +48,23 @@ def parse_projects_to_tree(all_projects):
     while len(index_list) > 0:
         remove_index = list()
         for index, curr_project in enumerate(all_projects):
-            parent_project_id = curr_project['@parentProjectId']
-            child_project_id =  curr_project['@id']
-            child_name =  curr_project['@name']
-            if tree.get_node(parent_project_id) is not None:
-                tree.create_node(child_project_id, child_project_id, parent=parent_project_id, data=child_name)
+
+            try:
+                parent_project_id = curr_project['@parentProjectId']
+                child_project_id =  curr_project['@id']
+                child_name =  curr_project['@name']
+
+            except:
                 remove_index.append(index)
 
-        index_list = list(set(range(len(all_projects))).difference(remove_index))
+            if tree.get_node(parent_project_id) is not None:
+                try:
+                    tree.create_node(child_project_id, child_project_id, parent=parent_project_id, data=child_name)
+                    remove_index.append(index)
+                except:
+                    remove_index.append(index)
+
+            index_list = list(set(range(len(all_projects))).difference(remove_index))
         if len(index_list) > 0:
             all_projects = list(itemgetter(*index_list)(all_projects))
     return tree
