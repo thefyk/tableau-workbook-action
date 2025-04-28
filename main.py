@@ -67,6 +67,11 @@ def get_addmodified_files(repo_token):
     json_payload =  json.loads(event_payload)
     pr = repo.get_pull(json_payload['number'])
     list_files = [file.filename for file in pr.get_files() if os.path.exists(file.filename)]
+    logging.info(repo)
+    logging.info(event_payload)
+    logging.info(f'File List: {list_files}')
+    list_files = [filename.replace('/', '') for filename in list_files]
+    logging.info(f'File List: {list_files}')
     return list_files
 
 
@@ -153,7 +158,7 @@ def main(args):
                 list_message.append(f"Workbook : { project_path } published to Tableau  :heavy_check_mark:")
 
             else:
-                logging.info(f"Skip publishing workbook { workbook_schema['name'] } not listed in config files")
+                logging.info(f"Skip publishing workbook { file } not listed in config files")
 
         comment_pr(args.repo_token, "\n".join(list_message))
         if status is False:
