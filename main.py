@@ -70,9 +70,17 @@ def get_addmodified_files(repo_token):
     logging.info(repo)
     logging.info(event_payload)
     logging.info(f'File List: {list_files}')
-    list_files = [filename.replace('/', '') for filename in list_files]
+
+    list_files_escaped = []
+    for filename in list_files:
+        if filename[:1] == '/':
+            list_files_escaped.append(filename[1:])
+        else:
+            list_files_escaped.append(filename)
+
     logging.info(f'File List: {list_files}')
-    return list_files
+    logging.info(f'File List Escaped: {list_files_escaped}')
+    return list_files_escaped
 
 
 def submit_workbook(workbook_schema, file_path, env):
