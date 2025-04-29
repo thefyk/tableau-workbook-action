@@ -153,6 +153,15 @@ def main(args):
         logging.info("Add & Modified Files:")
         logging.info(addmodified_files)
 
+        addmodified_stripped_files = []
+        for filename in addmodified_files:
+            if filename[:1] == '/':
+                addmodified_stripped_files.append(filename[1:])
+            else:
+                addmodified_stripped_files.append(filename)
+
+        addmodified_files = addmodified_stripped_files
+
         status = True
         list_message = list()
         for file in addmodified_files:
