@@ -88,7 +88,7 @@ def submit_workbook(workbook_schema, file_path, env):
     user = os.environ['USER']
 
     environment_projects = {
-        'stage': 'Stage'
+        'stage': 'Stage',
         'prod': 'Prod'
     }
 
