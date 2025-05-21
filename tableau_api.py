@@ -48,7 +48,6 @@ class TableauApi:
         }
         response = requests.get(f'{self.tableau_api_url}{API_VERSION}/sites/{self.site_id}/projects?pageSize=1000', headers=headers)
         all_projects_response = xmltodict.parse(response.text)
-        logging.error(all_projects_response)
         try:
             all_projects_response = all_projects_response['tsResponse']
             all_projects = all_projects_response['projects']['project']

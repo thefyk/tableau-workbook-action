@@ -36,7 +36,7 @@ class TableauWorkbookError(Exception):
 
 
 def get_full_schema(project_dir):
-    print(project_dir)
+    logging.info(project_dir)
     from mergedeep import merge, Strategy
     full_schema = None
     for schema_file in Path(project_dir).glob("**/*.yml"):
@@ -68,7 +68,6 @@ def get_addmodified_files(repo_token):
     pr = repo.get_pull(json_payload['number'])
     list_files = [file.filename for file in pr.get_files() if os.path.exists(file.filename)]
     logging.info(repo)
-    logging.info(event_payload)
     logging.info(f'File List: {list_files}')
 
     list_files_escaped = []
@@ -87,7 +86,7 @@ def submit_workbook(workbook_schema, file_path, env):
     environment = os.environ['ENVIRONMENT']
     user = os.environ['USER']
 
-    print(user)
+    logging.info(f'User: {user}')
     environment_projects = {'stage': 'Stage','prod': 'Prod'}
     environment_project = environment_projects.get(environment, user) 
 
