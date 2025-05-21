@@ -87,6 +87,7 @@ def submit_workbook(workbook_schema, file_path, env):
     environment = os.environ['ENVIRONMENT']
     user = os.environ['USER']
 
+    print(user)
     environment_projects = {'stage': 'Stage','prod': 'Prod'}
     environment_project = environment_projects.get(environment, user) 
 
