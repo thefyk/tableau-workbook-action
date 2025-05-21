@@ -88,7 +88,7 @@ def submit_workbook(workbook_schema, file_path, env):
 
     logging.info(f'User: {user}')
     environment_projects = {'stage': 'Stage','prod': 'Prod'}
-    environment_project = environment_projects.get(environment, user) 
+    environment_project = environment_projects.get(environment, f'Dev/{user}') 
 
     base_project = os.environ['BASE_PROJECT']
     project_path = f'{base_project}/{environment_project}'
