@@ -122,7 +122,6 @@ class TableauApi:
 
         return project_path_dict[project_path]
 
-
     def create_project_by_path(self, project_path):
         project_path_split = project_path.split("/")
 
@@ -153,6 +152,9 @@ class TableauApi:
         server.auth.sign_in(tableau_auth)
         new_workbook = TSC.WorkbookItem(name = name, project_id = project_id, show_tabs=show_tabs)
         new_workbook = server.workbooks.publish(new_workbook, file_path, TSC.Server.PublishMode.Overwrite, hidden_views=hidden_views)
+
+        new_datasource = TSC.DatasourceItem(project_id, name='Extract')
+        new_job = server.datasources.publish(new_datasource, file_path, TSC.Server.PublishMode.Overwrite)
 
         if tags is not None:
             new_workbook.tags = set(tags)
