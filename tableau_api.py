@@ -154,10 +154,10 @@ class TableauApi:
         new_workbook = TSC.WorkbookItem(name = name, project_id = project_id, show_tabs=show_tabs)
         new_workbook = server.workbooks.publish(new_workbook, file_path, TSC.Server.PublishMode.Overwrite, hidden_views=hidden_views)
 
-        new_workbook = server.workbooks.refresh(new_workbook)
+        # if tags is not None:
+        #     new_workbook.tags = set(tags)
+        #     new_workbook = server.workbooks.update(new_workbook)
 
-        if tags is not None:
-            new_workbook.tags = set(tags)
-            new_workbook = server.workbooks.update(new_workbook)
+        new_workbook = server.workbooks.refresh(new_workbook)
 
         return new_workbook
