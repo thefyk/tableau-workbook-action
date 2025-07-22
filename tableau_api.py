@@ -8,6 +8,7 @@ import logging
 import requests
 import xmltodict
 import tableauserverclient as TSC
+from tableauserverclient import ConnectionCredentials, ConnectionItem
 import xml.dom.minidom as minidom
 from collections import defaultdict
 
@@ -18,7 +19,6 @@ API_VERSION = '3.9'
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 logging.basicConfig(format='%(asctime)s %(message)s')
-
 
 class TableauApi:
     def __init__(self, pat_name, pat, tableau_api_url, tableau_url, site_id, site_name):
@@ -57,7 +57,6 @@ class TableauApi:
             logging.error(e.message)
             return None
 
-
     def list_all_data_sources(self):
         tableau_auth = TSC.TableauAuth(self.username, self.password)
         server = TSC.Server(self.tableau_url)
@@ -71,7 +70,6 @@ class TableauApi:
                 datasources, pagination_item = server.datasources.get(request_options)
                 all_datasources.extend(datasources)
             return all_datasources
-
 
     def list_all_workbooks(self):
         tableau_auth = TSC.TableauAuth(self.username, self.password)
@@ -87,7 +85,6 @@ class TableauApi:
                 all_workbooks.extend(workbooks)
             return all_workbooks
 
-
     def get_workbook_detail(self, workbook_id):
         tableau_auth = TSC.TableauAuth(self.username, self.password)
         server = TSC.Server(self.tableau_url)
@@ -96,7 +93,6 @@ class TableauApi:
             workbook = server.workbooks.get_by_id(workbook_id)
             return workbook
 
-
     def delete_workbook(self, workbook_id):
         tableau_auth = TSC.TableauAuth(self.username, self.password)
         server = TSC.Server(self.tableau_url)
@@ -104,7 +100,6 @@ class TableauApi:
         with server.auth.sign_in(tableau_auth):
             response = server.workbooks.delete(workbook_id)
             return response
-
 
     def get_project_id_by_path_with_tree(self, project_path):
         project_name = project_path.split("/")[-1]
@@ -145,19 +140,28 @@ class TableauApi:
                 last_project_id = new_project.id
         return last_project_id
 
-
     def publish_workbook(self, name, project_id, file_path, hidden_views = None, show_tabs = False, tags = None, description = None):
         tableau_auth = TSC.PersonalAccessTokenAuth(self.pat_name, self.pat, self.site_name)
         server = TSC.Server(self.tableau_url)
         server.use_server_version()
         server.auth.sign_in(tableau_auth)
+    
+        host = 'nfa05164.snowflakecomputing.com'
+        user = 'TABLEAU_EXT_DA'
+        password = 'eyJraWQiOiIyNTg4NjkxNDY3NjU1MjMzOCIsImFsZyI6IkVTMjU2In0.eyJwIjoiMzk1MDAyOTc0ODE3OjM5NTAwMjk3MDUwMSIsImlzcyI6IlNGOjEwMDkiLCJleHAiOjE3Nzg2OTYzMjJ9.ThnGl_SOGMmBm-p_sRyX70HqH5xe5dgH4DfgrAXa2_uoaysbtCLRM9u_HQOzVGpY8xzh8pYcKpUEFAFcrDSoug'
+
+        connection = ConnectionItem()
+        connection.server_address = 'nfa05164.snowflakecomputing.com'
+        connection.connection_credentials = ConnectionCredentials(user, password, True)
+
+        all_connections = [connection]
+
         new_workbook = TSC.WorkbookItem(name = name, project_id = project_id, show_tabs=show_tabs)
-        new_workbook = server.workbooks.publish(new_workbook, file_path, TSC.Server.PublishMode.Overwrite, hidden_views=hidden_views)
+        new_workbook = server.workbooks.publish(new_workbook, file_path, TSC.Server.PublishMode.Overwrite, connections=all_connections, hidden_views=hidden_views)
+        new_workbook = server.workbooks.refresh(new_workbook)
 
         # if tags is not None:
         #     new_workbook.tags = set(tags)
         #     new_workbook = server.workbooks.update(new_workbook)
-
-        new_workbook = server.workbooks.refresh(new_workbook)
 
         return new_workbook
