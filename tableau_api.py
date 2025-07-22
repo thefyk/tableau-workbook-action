@@ -8,7 +8,6 @@ import logging
 import requests
 import xmltodict
 import tableauserverclient as TSC
-from tableauserverclient import ConnectionCredentials, ConnectionItem
 import xml.dom.minidom as minidom
 from collections import defaultdict
 
@@ -140,24 +139,14 @@ class TableauApi:
                 last_project_id = new_project.id
         return last_project_id
 
-    def publish_workbook(self, name, project_id, file_path, hidden_views = None, show_tabs = False, tags = None, description = None):
+    def publish_workbook(self, name, project_id, file_path, hidden_views = None, show_tabs = False, tags = None, description = None, connections = []):
         tableau_auth = TSC.PersonalAccessTokenAuth(self.pat_name, self.pat, self.site_name)
         server = TSC.Server(self.tableau_url)
         server.use_server_version()
         server.auth.sign_in(tableau_auth)
-    
-        host = 'nfa05164.snowflakecomputing.com'
-        user = 'TABLEAU_EXT_DA'
-        password = ''
-
-        connection = ConnectionItem()
-        connection.server_address = 'nfa05164.snowflakecomputing.com'
-        connection.connection_credentials = ConnectionCredentials(user, password, True)
-
-        all_connections = [connection]
 
         new_workbook = TSC.WorkbookItem(name = name, project_id = project_id, show_tabs=show_tabs)
-        new_workbook = server.workbooks.publish(new_workbook, file_path, TSC.Server.PublishMode.Overwrite, connections=all_connections, hidden_views=hidden_views)
+        new_workbook = server.workbooks.publish(new_workbook, file_path, TSC.Server.PublishMode.Overwrite, connections=connections, hidden_views=hidden_views)
         new_workbook = server.workbooks.refresh(new_workbook)
 
         # if tags is not None:

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 @author: jayaharyonomanik
+Edited By: thefyk
 """
-
 
 import os
 import sys
@@ -14,6 +14,7 @@ from pathlib import Path
 from github import Github
 
 from tableau_api import TableauApi
+import authentication
 
 
 logger = logging.getLogger()
@@ -58,7 +59,6 @@ def comment_pr(repo_token, message):
     pr = repo.get_pull(json_payload['number'])
     pr.create_issue_comment(message)
     return True
-
 
 def get_addmodified_files(repo_token):
     g = Github(repo_token)
@@ -127,13 +127,19 @@ def submit_workbook(workbook_schema, file_path, env):
         description = workbook_schema['option']['description'] if 'description' in workbook_schema['option'] else None
 
     logging.info(f'Publishing Workbook')
+    
+    connections = []
+    for connection_name in ['SNOWFLAKE']:
+        connections.append(authentication.get_tableau_connection(connection_name))
+
     new_workbook = tableau_api.publish_workbook(name =  workbook_schema['name'],
                                                 project_id = project_id,
                                                 file_path = file_path,
                                                 hidden_views = hidden_views,
                                                 show_tabs = show_tabs,
                                                 tags = tags,
-                                                description = description)
+                                                description = description,
+                                                connections = connections)
 
     return project_path, new_workbook
 
