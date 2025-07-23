@@ -182,6 +182,7 @@ def main(args):
     if os.environ.get('ACTION') == 'REFRESH_WORKBOOKS':
         logging.info('REFRESHING WORKBOOKS WITH REFRESH SCHEDULES')
         refresh_workbooks(full_schema_config)
+        return
 
     addmodified_files = get_addmodified_files(args.repo_token)
     addmodified_files = [file.lstrip(args.workbook_dir) for file in addmodified_files if args.workbook_dir in file and ".twb" in file]
