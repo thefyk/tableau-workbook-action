@@ -16,12 +16,10 @@ inputs:
     required: true
 runs:
   using: 'docker'
-  steps:
-    - run: |
-        export SNOWFLAKE_USER=${{ secrets.SNOWFLAKE_USER }}
-        export SNOWFLAKE_PASSWORD=${{ secrets.SNOWFLAKE_PASSWORD }}
-        export SNOWFLAKE_HOST=${{ secrets.SNOWFLAKE_HOST }}
-
+  env:
+    SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+    SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+    SNOWFLAKE_HOST: ${{ secrets.SNOWFLAKE_HOST }}
   image: 'Dockerfile'
   args:
     - ${{ inputs.workbook_dir}}
