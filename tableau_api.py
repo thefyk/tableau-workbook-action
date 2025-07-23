@@ -139,6 +139,15 @@ class TableauApi:
                 last_project_id = new_project.id
         return last_project_id
 
+    def refresh_workbook(self, name, project_id):
+        tableau_auth = TSC.PersonalAccessTokenAuth(self.pat_name, self.pat, self.site_name)
+        server = TSC.Server(self.tableau_url)
+        server.use_server_version()
+        server.auth.sign_in(tableau_auth)
+
+        workbook = TSC.WorkbookItem(name=name, project_id=project_id)
+        server.workbooks.refresh(workbook)
+
     def publish_workbook(self, name, project_id, file_path, hidden_views = None, show_tabs = False, tags = None, description = None, connections = []):
         tableau_auth = TSC.PersonalAccessTokenAuth(self.pat_name, self.pat, self.site_name)
         server = TSC.Server(self.tableau_url)
