@@ -16,10 +16,6 @@ inputs:
     required: true
 runs:
   using: 'docker'
-  env:
-    SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
-    SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
-    SNOWFLAKE_HOST: ${{ secrets.SNOWFLAKE_HOST }}
   image: 'Dockerfile'
   args:
     - ${{ inputs.workbook_dir}}
