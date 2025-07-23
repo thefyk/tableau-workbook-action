@@ -9,6 +9,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN mkdir /action
 COPY main.py /action/main.py
 COPY tableau_api.py /action/tableau_api.py
+COPY authentication.py /action/authentication.py
 COPY util.py /action/util.py
 COPY entrypoint.sh /entrypoint.sh
 
