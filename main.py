@@ -179,7 +179,7 @@ def main(args):
     full_schema_config = get_full_schema(args.workbook_dir)
     logging.info(str(full_schema_config))
 
-    if os.environ('ACTION') == 'REFRESH_WORKBOOKS':
+    if os.environ.get('ACTION') == 'REFRESH_WORKBOOKS':
         logging.info('REFRESHING WORKBOOKS WITH REFRESH SCHEDULES')
         refresh_workbooks(full_schema_config)
 
