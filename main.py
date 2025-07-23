@@ -145,12 +145,11 @@ def refresh_workbooks(full_schema_config):
     environment = os.environ['ENVIRONMENT']
     user = os.environ['USER']
 
-    logging.info(f'User: {user}')
     environment_projects = {'stage': 'Stage','prod': 'Prod'}
     environment_project = environment_projects.get(environment, f'Dev/{user}') 
 
     base_project = os.environ['BASE_PROJECT']
-    project_path = f'{base_project}/{environment_project}'
+    project_path = f'{base_project}/Dev'
 
     tableau_api = TableauApi(os.environ['PATNAME'],
                             os.environ['PAT'],
