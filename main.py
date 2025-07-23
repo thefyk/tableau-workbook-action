@@ -163,7 +163,7 @@ def refresh_workbooks(full_schema_config):
     current_hour = datetime.now().hour
     logging.info(f'REFRESHING WORKBOOKS FOR HOUR {current_hour}')
     for workbook_name, workbook_config in full_schema_config['workbooks'].items():
-        for schedule in workbook_config('schedules'):
+        for schedule in workbook_config.get('schedules', []):
             logging.info(f'{workbook_name}: {schedule}')
             if schedule.startswith('DAILY'):
                 hour = int(schedule[-2:])
