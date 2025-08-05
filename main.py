@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 @author: jayaharyonomanik
+Edited By: thefyk
 """
-
 
 import os
 import sys
@@ -10,10 +10,12 @@ import yaml
 import json
 import logging
 import argparse
+from datetime import datetime
 from pathlib import Path
 from github import Github
 
 from tableau_api import TableauApi
+import authentication
 
 
 logger = logging.getLogger()
@@ -34,7 +36,6 @@ class TableauWorkbookError(Exception):
     def __str__(self):
         return f'{self.message}'
 
-
 def get_full_schema(project_dir):
     logging.info(project_dir)
     from mergedeep import merge, Strategy
@@ -49,7 +50,6 @@ def get_full_schema(project_dir):
 
     return new_schema
 
-
 def comment_pr(repo_token, message):
     g = Github(repo_token)
     repo = g.get_repo(os.environ['GITHUB_REPOSITORY'])
@@ -58,7 +58,6 @@ def comment_pr(repo_token, message):
     pr = repo.get_pull(json_payload['number'])
     pr.create_issue_comment(message)
     return True
-
 
 def get_addmodified_files(repo_token):
     g = Github(repo_token)
@@ -80,7 +79,6 @@ def get_addmodified_files(repo_token):
     logging.info(f'File List: {list_files}')
     logging.info(f'File List Escaped: {list_files_escaped}')
     return list_files_escaped
-
 
 def submit_workbook(workbook_schema, file_path, env):
     environment = os.environ['ENVIRONMENT']
@@ -127,24 +125,63 @@ def submit_workbook(workbook_schema, file_path, env):
         description = workbook_schema['option']['description'] if 'description' in workbook_schema['option'] else None
 
     logging.info(f'Publishing Workbook')
+    
+    connections = []
+    for connection_name in workbook_schema.get('connections'):
+        connections.append(authentication.get_tableau_connection(connection_name))
+
     new_workbook = tableau_api.publish_workbook(name =  workbook_schema['name'],
                                                 project_id = project_id,
                                                 file_path = file_path,
                                                 hidden_views = hidden_views,
                                                 show_tabs = show_tabs,
                                                 tags = tags,
-                                                description = description)
+                                                description = description,
+                                                connections = connections)
 
     return project_path, new_workbook
 
+def refresh_workbooks(full_schema_config):
+    environment = os.environ['ENVIRONMENT']
+    user = os.environ['USER']
+
+    environment_projects = {'stage': 'Stage','prod': 'Prod'}
+    environment_project = environment_projects.get(environment, f'Dev/{user}') 
+
+    base_project = os.environ['BASE_PROJECT']
+    project_path = f'{base_project}/Dev'
+
+    tableau_api = TableauApi(os.environ['PATNAME'],
+                            os.environ['PAT'],
+                            os.environ['TABLEAU_URL'] + '/api/',
+                            os.environ['TABLEAU_URL'],
+                            os.environ['SITE_ID'],
+                            os.environ['SITE_NAME'])
+
+
+    current_hour = datetime.now().hour
+    logging.info(f'REFRESHING WORKBOOKS FOR HOUR {current_hour}')
+    for workbook_name, workbook_config in full_schema_config['workbooks'].items():
+        for schedule in workbook_config.get('schedules', []):
+            logging.info(f'{workbook_name}: {schedule}')
+            if schedule.startswith('DAILY'):
+                hour = int(schedule[-2:])
+                if hour == current_hour:
+                    logging.info(f"Refreshing Workbook {workbook_name}")
+                    project_id = tableau_api.get_project_id_by_path_with_tree(project_path)
+                    tableau_api.refresh_workbook(workbook_name, project_id)
 
 def main(args):
     logging.info(f"Workbook Dir : { args.workbook_dir }")
     logging.info(f"Environments : { args.env }")
 
     full_schema_config = get_full_schema(args.workbook_dir)
-
     logging.info(str(full_schema_config))
+
+    if os.environ.get('ACTION') == 'REFRESH_WORKBOOKS':
+        logging.info('REFRESHING WORKBOOKS WITH REFRESH SCHEDULES')
+        refresh_workbooks(full_schema_config)
+        return
 
     addmodified_files = get_addmodified_files(args.repo_token)
     addmodified_files = [file.lstrip(args.workbook_dir) for file in addmodified_files if args.workbook_dir in file and ".twb" in file]
