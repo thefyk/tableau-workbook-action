@@ -160,7 +160,7 @@ class TableauApi:
         http_path = os.environ[f'CONNECTIONS_{connection_name}_HTTP_PATH']
 
         datasource_item = server.datasources.get_by_id(datasource_id)
-        server.datasources.download(datasource_id, filepath='temp.tdsx', include_extract=False)
+        server.datasources.download(datasource_item, filepath='temp.tdsx', include_extract=False)
         dd = Datasource.from_file('temp.tdsx')
         print(dd.connections[0]._connectionXML.items())
         dd.connections[0].server_address = host
