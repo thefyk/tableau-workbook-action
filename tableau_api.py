@@ -161,6 +161,10 @@ class TableauApi:
         new_workbook = server.workbooks.publish(new_workbook, file_path, TSC.Server.PublishMode.Overwrite, connections=connections, hidden_views=hidden_views)
         new_workbook = server.workbooks.refresh(new_workbook)
 
+        server.workbooks.populate_connections(new_workbook)
+        for connection in new_workbook.connections:
+            print(connection.__dict__)
+
         # if tags is not None:
         #     new_workbook.tags = set(tags)
         #     new_workbook = server.workbooks.update(new_workbook)
