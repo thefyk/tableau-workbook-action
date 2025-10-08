@@ -17,7 +17,6 @@ def get_tableau_connection(connection_name):
         connection = ConnectionItem()
         connection.server_address = host
         connection.port = 443
-        connection.connection_type = 'databricks'
         connection.username = user
         connection.password = password
         connection.set_attribute('httpPath', http_path)
