@@ -19,10 +19,5 @@ def get_tableau_connection(connection_name):
         connection.port = 443
         connection.username = user
         connection.password = password
-        connection.set_attribute('httpPath', http_path)
-
-        if hasattr(connection, '_connectionXML'):
-            connection._connectionXML.set('_.fcp.DatabricksCatalog.true...v-http-path', http_path)
-
 
     return connection
