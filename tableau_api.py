@@ -162,16 +162,33 @@ class TableauApi:
         print(datasource_id)
         datasource_item = server.datasources.get_by_id(datasource_id)
         print(datasource_item.__dict__)
-        server.datasources.download(datasource_id, filepath='temp.tdsx', include_extract=False)
-        dd = Datasource.from_file('temp.tdsx')
-        print(dd.connections[0]._connectionXML.items())
-        dd.connections[0].server_address = host
-        dd.connections[0].port = 443
-        dd.connections[0].username = user
-        dd.connections[0].password = password
-        dd.connections[0]._connectionXML.set('_.fcp.DatabricksCatalog.true...v-http-path', http_path)
-        dd.save()
-        server.datasources.publish(datasource_item, 'temp.tdsx', TSC.Server.PublishMode.Overwrite)
+
+        all_datasources, pagination_item = server.datasources.get()
+
+        # 3. Iterate and find the data source by name
+        target_datasource_name = datasource_item._name
+        found_datasource = None
+        for datasource in all_datasources:
+            if datasource.name == target_datasource_name:
+                found_datasource = datasource
+                print(datasource.name)
+                break
+
+        if found_datasource:
+            print(f"Found data source: {found_datasource.name} (ID: {found_datasource.id})")
+        else:
+            print(f"Data source '{target_datasource_name}' not found.")
+    
+        # server.datasources.download(datasource_id, filepath='temp.tdsx', include_extract=False)
+        # dd = Datasource.from_file('temp.tdsx')
+        # print(dd.connections[0]._connectionXML.items())
+        # dd.connections[0].server_address = host
+        # dd.connections[0].port = 443
+        # dd.connections[0].username = user
+        # dd.connections[0].password = password
+        # dd.connections[0]._connectionXML.set('_.fcp.DatabricksCatalog.true...v-http-path', http_path)
+        # dd.save()
+        # server.datasources.publish(datasource_item, 'temp.tdsx', TSC.Server.PublishMode.Overwrite)
 
     def publish_workbook(self, name, project_id, file_path, hidden_views = None, show_tabs = False, tags = None, description = None, connections = []):
         tableau_auth = TSC.PersonalAccessTokenAuth(self.pat_name, self.pat, self.site_name)
