@@ -153,7 +153,7 @@ class TableauApi:
                 return
 
     def authenticate_databricks_datasource(self, server, datasource_id):
-        connection_name = 'databricks'
+        connection_name = 'DATABRICKS'
         host = os.environ[f'CONNECTIONS_{connection_name}_HOST']
         user = os.environ.get(f'CONNECTIONS_{connection_name}_USER')
         password = os.environ.get(f'CONNECTIONS_{connection_name}_PASSWORD')
