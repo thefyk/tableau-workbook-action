@@ -3,11 +3,12 @@
 @author: jayaharyonomanik
 """
 
-
+import os
 import logging
 import requests
 import xmltodict
 import tableauserverclient as TSC
+from tableaudocumentapi import Workbook, Datasource
 import xml.dom.minidom as minidom
 from collections import defaultdict
 
@@ -151,6 +152,25 @@ class TableauApi:
                 server.workbooks.refresh(workbook)
                 return
 
+    def authenticate_databricks_datasource(server, datasource_id):
+        connection_name = 'databricks'
+        host = os.environ[f'CONNECTIONS_{connection_name}_HOST']
+        user = os.environ.get(f'CONNECTIONS_{connection_name}_USER')
+        password = os.environ.get(f'CONNECTIONS_{connection_name}_PASSWORD')
+        http_path = os.environ[f'CONNECTIONS_{connection_name}_HTTP_PATH']
+
+        datasource_item = server.datasources.get_by_id(datasource_id)
+        server.datasources.download(datasource_id, filepath='temp.tdsx', include_extract=False)
+        dd = Datasource.from_file('temp.tdsx')
+        print(dd.connections[0]._connectionXML.items())
+        dd.connections[0].server_address = host
+        dd.connections[0].port = 443
+        dd.connections[0].username = user
+        dd.connections[0].password = password
+        dd.connections[0]._connectionXML.set('_.fcp.DatabricksCatalog.true...v-http-path', http_path)
+        dd.save()
+        server.datasources.publish(datasource_item, 'temp.tdsx', TSC.Server.PublishMode.Overwrite)
+
     def publish_workbook(self, name, project_id, file_path, hidden_views = None, show_tabs = False, tags = None, description = None, connections = []):
         tableau_auth = TSC.PersonalAccessTokenAuth(self.pat_name, self.pat, self.site_name)
         server = TSC.Server(self.tableau_url)
@@ -164,6 +184,8 @@ class TableauApi:
         server.workbooks.populate_connections(workbook)
         for connection in workbook.connections:
             print(connection.__dict__)
+            if connection._connection_type == 'databricks':
+                authenticate_databricks_datasource(server, connection._datasource_id)
 
         # if tags is not None:
         #     new_workbook.tags = set(tags)
