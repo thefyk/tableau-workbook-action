@@ -158,11 +158,11 @@ class TableauApi:
         server.auth.sign_in(tableau_auth)
 
         new_workbook = TSC.WorkbookItem(name = name, project_id = project_id, show_tabs=show_tabs)
-        new_workbook = server.workbooks.publish(new_workbook, file_path, TSC.Server.PublishMode.Overwrite, connections=connections, hidden_views=hidden_views)
-        new_workbook = server.workbooks.refresh(new_workbook)
+        workbook = server.workbooks.publish(new_workbook, file_path, TSC.Server.PublishMode.Overwrite, connections=connections, hidden_views=hidden_views)
+        new_workbook = server.workbooks.refresh(workbook)
 
-        server.workbooks.populate_connections(new_workbook)
-        for connection in new_workbook.connections:
+        server.workbooks.populate_connections(workbook)
+        for connection in workbook.connections:
             print(connection.__dict__)
 
         # if tags is not None:
