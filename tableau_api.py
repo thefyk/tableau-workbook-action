@@ -169,6 +169,8 @@ class TableauApi:
         target_datasource_name = datasource_item.name
         found_datasource = None
         for datasource in all_datasources:
+            print(datasource.name)
+            print(datasource.id)
             if datasource.name == target_datasource_name:
                 found_datasource = datasource
                 print(datasource.name)
