@@ -166,7 +166,7 @@ class TableauApi:
         all_datasources, pagination_item = server.datasources.get()
 
         # 3. Iterate and find the data source by name
-        target_datasource_name = datasource_item._name
+        target_datasource_name = datasource_item.name
         found_datasource = None
         for datasource in all_datasources:
             if datasource.name == target_datasource_name:
