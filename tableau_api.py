@@ -163,7 +163,7 @@ class TableauApi:
         datasource_item = server.datasources.get_by_id(datasource_id)
         print(datasource_item.__dict__)
 
-        all_datasources, pagination_item = server.datasources.get()
+        all_datasources = list(TSC.Pager(server.datasources))
 
         # 3. Iterate and find the data source by name
         target_datasource_name = datasource_item.name
