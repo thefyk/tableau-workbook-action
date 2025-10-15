@@ -152,7 +152,7 @@ class TableauApi:
                 server.workbooks.refresh(workbook)
                 return
 
-    def authenticate_databricks_datasource(self, server, datasource_id):
+    def authenticate_databricks_datasource(self, server, datasource_id, file_path):
         connection_name = 'DATABRICKS'
         host = os.environ[f'CONNECTIONS_{connection_name}_HOST']
         user = os.environ.get(f'CONNECTIONS_{connection_name}_USER')
@@ -203,10 +203,10 @@ class TableauApi:
         new_workbook = server.workbooks.refresh(workbook)
 
         server.workbooks.populate_connections(workbook)
-        for connection in workbook.connections:
-            print(connection.__dict__)
-            if connection._connection_type == 'databricks':
-                self.authenticate_databricks_datasource(server, connection._datasource_id)
+        # for connection in workbook.connections:
+        #     print(connection.__dict__)
+        #     if connection._connection_type == 'databricks':
+        #         self.authenticate_databricks_datasource(server, connection._datasource_id)
 
         # if tags is not None:
         #     new_workbook.tags = set(tags)

@@ -17,7 +17,7 @@ def get_tableau_connection(connection_name):
         connection = ConnectionItem()
         connection.server_address = host
         connection.port = 443
-        connection.username = user
+        connection.username = 'token'
         connection.password = password
 
     return connection
