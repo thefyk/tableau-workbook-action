@@ -1,7 +1,7 @@
 import os
 from tableauserverclient import ConnectionCredentials, ConnectionItem
 
-def get_tableau_connection(connection_name, connection):
+def get_tableau_connection(connection_name):
     host = os.environ[f'CONNECTIONS_{connection_name}_HOST']
     user = os.environ.get(f'CONNECTIONS_{connection_name}_USER')
     password = os.environ.get(f'CONNECTIONS_{connection_name}_PASSWORD')
