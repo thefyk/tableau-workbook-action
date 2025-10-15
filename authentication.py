@@ -14,7 +14,7 @@ def get_tableau_connection(connection_name, connection):
     if connection_name.lower() == 'databricks':
         http_path = os.environ[f'CONNECTIONS_{connection_name}_HTTP_PATH']
 
-        connection = connection
+        connection = ConnectionItem()
         connection.username = 'token'
         connection.password = password
         connection.embed_password = True
