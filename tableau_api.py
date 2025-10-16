@@ -159,13 +159,13 @@ class TableauApi:
         password = os.environ.get(f'CONNECTIONS_{connection_name}_PASSWORD')
         http_path = os.environ[f'CONNECTIONS_{connection_name}_HTTP_PATH']
 
+        new_connection_creds = TSC.ConnectionCredentials(
+            name='token',
+            password=password,
+            embed=True
+        )
 
-        connection.server_address = host
-        connection.username = 'token'
-        connection.password = password
-        connection.embed_password = True
-
-        return connection
+        return new_connection_creds
 
         # print(datasource_id)
         # datasource_item = server.datasources.get_by_id(datasource_id)
@@ -214,11 +214,12 @@ class TableauApi:
         for connection in workbook.connections:
             print(connection.__dict__)
             if connection._connection_type == 'databricks':
-                connection = self.authenticate_databricks_datasource(server, connection)
+                connection_credentials = self.authenticate_databricks_datasource(server, connection)
 
             new_connections.append(connection)
 
-        workbook = server.workbooks.publish(new_workbook, file_path, TSC.Server.PublishMode.Overwrite, connections=new_connections, hidden_views=hidden_views)
+        workbook = server.workbooks.publish(new_workbook, file_path, TSC.Server.PublishMode.Overwrite, connections=connections, hidden_views=hidden_views,
+                                            connection_credentials=connection_credentials)
         new_workbook = server.workbooks.refresh(workbook)
 
         # if tags is not None:
