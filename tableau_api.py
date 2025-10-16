@@ -214,7 +214,7 @@ class TableauApi:
             if connection._connection_type == 'databricks':
                 connection = self.authenticate_databricks_datasource(server, connection)
                 print(connection.__dict__)
-                server.workbooks.update(workbook, connection)    
+                server.workbooks.update_connection(workbook, connection)    
 
         new_workbook = server.workbooks.refresh(workbook)
 
