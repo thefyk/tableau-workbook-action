@@ -128,7 +128,7 @@ def submit_workbook(workbook_schema, file_path, env):
     
     connections = []
     for connection_name in workbook_schema.get('connections'):
-        if connection_name.lower() in ['snowflake', 'databricks']:
+        if connection_name.lower() in ['snowflake']:
             connections.append(authentication.get_tableau_connection(connection_name))
 
     new_workbook = tableau_api.publish_workbook(name =  workbook_schema['name'],

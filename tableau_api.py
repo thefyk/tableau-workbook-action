@@ -152,34 +152,42 @@ class TableauApi:
                 server.workbooks.refresh(workbook)
                 return
 
-    def authenticate_databricks_datasource(self, server, datasource_id, file_path):
+    def authenticate_databricks_datasource(self, server, connection):
         connection_name = 'DATABRICKS'
         host = os.environ[f'CONNECTIONS_{connection_name}_HOST']
         user = os.environ.get(f'CONNECTIONS_{connection_name}_USER')
         password = os.environ.get(f'CONNECTIONS_{connection_name}_PASSWORD')
         http_path = os.environ[f'CONNECTIONS_{connection_name}_HTTP_PATH']
 
-        print(datasource_id)
-        datasource_item = server.datasources.get_by_id(datasource_id)
-        print(datasource_item.__dict__)
 
-        all_datasources = list(TSC.Pager(server.datasources))
+        connection.server_address = host
+        connection.username = 'token'
+        connection.password = password
+        connection.embed_password = True
 
-        # 3. Iterate and find the data source by name
-        target_datasource_name = datasource_item.name
-        found_datasource = None
-        for datasource in all_datasources:
-            print(datasource.name)
-            print(datasource.id)
-            if datasource.name == target_datasource_name:
-                found_datasource = datasource
-                print(datasource.name)
-                break
+        return connection
 
-        if found_datasource:
-            print(f"Found data source: {found_datasource.name} (ID: {found_datasource.id})")
-        else:
-            print(f"Data source '{target_datasource_name}' not found.")
+        # print(datasource_id)
+        # datasource_item = server.datasources.get_by_id(datasource_id)
+        # print(datasource_item.__dict__)
+
+        # all_datasources = list(TSC.Pager(server.datasources))
+
+        # # 3. Iterate and find the data source by name
+        # target_datasource_name = datasource_item.name
+        # found_datasource = None
+        # for datasource in all_datasources:
+        #     print(datasource.name)
+        #     print(datasource.id)
+        #     if datasource.name == target_datasource_name:
+        #         found_datasource = datasource
+        #         print(datasource.name)
+        #         break
+
+        # if found_datasource:
+        #     print(f"Found data source: {found_datasource.name} (ID: {found_datasource.id})")
+        # else:
+        #     print(f"Data source '{target_datasource_name}' not found.")
     
         # server.datasources.download(datasource_id, filepath='temp.tdsx', include_extract=False)
         # dd = Datasource.from_file('temp.tdsx')
@@ -200,13 +208,18 @@ class TableauApi:
 
         new_workbook = TSC.WorkbookItem(name = name, project_id = project_id, show_tabs=show_tabs)
         workbook = server.workbooks.publish(new_workbook, file_path, TSC.Server.PublishMode.Overwrite, connections=connections, hidden_views=hidden_views)
-        new_workbook = server.workbooks.refresh(workbook)
 
         server.workbooks.populate_connections(workbook)
-        # for connection in workbook.connections:
-        #     print(connection.__dict__)
-        #     if connection._connection_type == 'databricks':
-        #         self.authenticate_databricks_datasource(server, connection._datasource_id)
+        new_connections = []
+        for connection in workbook.connections:
+            print(connection.__dict__)
+            if connection._connection_type == 'databricks':
+                connection = self.authenticate_databricks_datasource(server, connection)
+
+            new_connections.append(connection)
+
+        workbook = server.workbooks.publish(new_workbook, file_path, TSC.Server.PublishMode.Overwrite, connections=new_connections, hidden_views=hidden_views)
+        new_workbook = server.workbooks.refresh(workbook)
 
         # if tags is not None:
         #     new_workbook.tags = set(tags)
