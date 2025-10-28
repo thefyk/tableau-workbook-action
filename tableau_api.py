@@ -205,18 +205,18 @@ class TableauApi:
         server.auth.sign_in(tableau_auth)
 
         new_workbook = TSC.WorkbookItem(name = name, project_id = project_id, show_tabs=show_tabs)
-        workbook = server.workbooks.publish(new_workbook, file_path, TSC.Server.PublishMode.Overwrite, connections=connections, hidden_views=hidden_views)
+        workbook = server.workbooks.publish(new_workbook, file_path, TSC.Server.PublishMode.Overwrite, hidden_views=hidden_views)
 
-        server.workbooks.populate_connections(workbook)
-        new_connections = []
-        for connection in workbook.connections:
-            print(connection.__dict__)
-            if connection._connection_type == 'databricks':
-                connection = self.authenticate_databricks_datasource(server, connection)
-                print(connection.__dict__)
-                server.workbooks.update_connection(workbook, connection)    
+        # server.workbooks.populate_connections(workbook)
+        # new_connections = []
+        # for connection in workbook.connections:
+        #     print(connection.__dict__)
+        #     if connection._connection_type == 'databricks':
+        #         connection = self.authenticate_databricks_datasource(server, connection)
+        #         print(connection.__dict__)
+        #         server.workbooks.update_connection(workbook, connection)    
 
-        new_workbook = server.workbooks.refresh(workbook)
+        # new_workbook = server.workbooks.refresh(workbook)
 
         # if tags is not None:
         #     new_workbook.tags = set(tags)
