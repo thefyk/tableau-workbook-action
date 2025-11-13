@@ -126,10 +126,10 @@ def submit_workbook(workbook_schema, file_path, env):
 
     logging.info(f'Publishing Workbook')
     
-    connections = []
-    for connection_name in workbook_schema.get('connections'):
-        if connection_name.lower() in ['snowflake']:
-            connections.append(authentication.get_tableau_connection(connection_name))
+    # connections = []
+    # for connection_name in workbook_schema.get('connections'):
+    #     if connection_name.lower() in ['snowflake']:
+    #         connections.append(authentication.get_tableau_connection(connection_name))
 
     new_workbook = tableau_api.publish_workbook(name =  workbook_schema['name'],
                                                 project_id = project_id,
@@ -137,8 +137,7 @@ def submit_workbook(workbook_schema, file_path, env):
                                                 hidden_views = hidden_views,
                                                 show_tabs = show_tabs,
                                                 tags = tags,
-                                                description = description,
-                                                connections = connections)
+                                                description = description)
 
     return project_path, new_workbook
 
@@ -160,17 +159,17 @@ def refresh_workbooks(full_schema_config):
                             os.environ['SITE_NAME'])
 
 
-    current_hour = datetime.now().hour
-    logging.info(f'REFRESHING WORKBOOKS FOR HOUR {current_hour}')
-    for workbook_name, workbook_config in full_schema_config['workbooks'].items():
-        for schedule in workbook_config.get('schedules', []):
-            logging.info(f'{workbook_name}: {schedule}')
-            if schedule.startswith('DAILY'):
-                hour = int(schedule[-2:])
-                if hour == current_hour:
-                    logging.info(f"Refreshing Workbook {workbook_name}")
-                    project_id = tableau_api.get_project_id_by_path_with_tree(project_path)
-                    tableau_api.refresh_workbook(workbook_name, project_id)
+    # current_hour = datetime.now().hour
+    # logging.info(f'REFRESHING WORKBOOKS FOR HOUR {current_hour}')
+    # for workbook_name, workbook_config in full_schema_config['workbooks'].items():
+    #     for schedule in workbook_config.get('schedules', []):
+    #         logging.info(f'{workbook_name}: {schedule}')
+    #         if schedule.startswith('DAILY'):
+    #             hour = int(schedule[-2:])
+    #             if hour == current_hour:
+    #                 logging.info(f"Refreshing Workbook {workbook_name}")
+    #                 project_id = tableau_api.get_project_id_by_path_with_tree(project_path)
+    #                 tableau_api.refresh_workbook(workbook_name, project_id)
 
 def main(args):
     logging.info(f"Workbook Dir : { args.workbook_dir }")
