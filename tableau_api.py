@@ -172,8 +172,6 @@ class TableauApi:
         server.auth.sign_in(tableau_auth)
 
         new_workbook = TSC.WorkbookItem(name = name, project_id = project_id, show_tabs=show_tabs)
-        workbook = server.workbooks.publish(new_workbook, file_path, TSC.Server.PublishMode.Overwrite, hidden_views=hidden_views)
-
-        new_workbook = server.workbooks.refresh(workbook)
+        new_workbook = server.workbooks.publish(new_workbook, file_path, TSC.Server.PublishMode.Overwrite, hidden_views=hidden_views)
 
         return new_workbook
