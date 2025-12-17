@@ -177,12 +177,18 @@ class TableauApi:
         new_workbook = server.workbooks.publish(new_workbook, file_path, TSC.Server.PublishMode.Overwrite, hidden_views=hidden_views)
 
         print('Updating Workbook to Show Tabs')
-        for workbook in TSC.Pager(server.workbooks):
-            if workbook.name == name:
-                print(f'Updating {workbook.name} to Show Tabs')
-                workbook.show_tabs = True
-                server.workbooks.update(workbook)
-                print(f"Updated workbook '{workbook.name}' to show tabs.")
-                break
+
+        all_workbooks = list(TSC.Pager(server.workbooks))
+        for workbook in all_workbooks:
+            # Skip workbooks that do not have a project_id defined (e.g., those in 'Personal Space')
+            if not workbook.project_id:
+                continue 
+            else:
+                if workbook.name == name:
+                    print(f'Updating {workbook.name} to Show Tabs')
+                    workbook.show_tabs = True
+                    server.workbooks.update(workbook)
+                    print(f"Updated workbook '{workbook.name}' to show tabs.")
+                    break
 
         return new_workbook
