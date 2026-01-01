@@ -59,6 +59,32 @@ def comment_pr(repo_token, message):
     pr.create_issue_comment(message)
     return True
 
+def update_databricks_workboook_schema(full_schema_config):
+    schema_str = json.dumps(full_schema_config)
+    databricks_host = os.environ.get('DATABRICKS_HOST')
+    databricks_token = os.environ.get('DATABRICKS_TOKEN')
+    update_schema_job_id = os.environ.get('UPDATE_SCHEMA_JOB_ID')
+
+    if databricks_host and databricks_token and update_schema_job_id:
+        import requests
+        headers = {
+            'Authorization': f'Bearer {databricks_token}',
+            'Content-Type': 'application/json'
+        }
+        payload = {
+            "job_id": int(update_schema_job_id),
+            "notebook_params": {
+                "schema": schema_str
+            }
+        }
+        response = requests.post(f'{databricks_host}/api/2.1/jobs/run-now', headers=headers, json=payload)
+        if response.status_code == 200:
+            logging.info('Successfully triggered Databricks job to update workbook schema.')
+        else:
+            logging.error(f'Failed to trigger Databricks job. Status code: {response.status_code}, Response: {response.text}')
+    else:
+        logging.info('Databricks environment variables not set. Skipping schema update.')
+
 def get_addmodified_files(repo_token):
     g = Github(repo_token)
     repo = g.get_repo(os.environ['GITHUB_REPOSITORY'])
