@@ -234,6 +234,8 @@ def main(args):
                 project_path, new_workbook = submit_workbook(workbook_schema,
                                                                 args.workbook_dir + "/" + file,
                                                                 args.env)
+
+                full_schema_config['workbooks'][file]['workbook_id'] = new_workbook.id
                 logging.info(f"Workbook : { project_path } Published to Tableau")
                 list_message.append(f"Workbook : { project_path } published to Tableau  :heavy_check_mark:")
 
