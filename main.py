@@ -246,6 +246,8 @@ def main(args):
             sys.exit(1)
     else:
         logging.info("No file changes detected")
+
+    update_databricks_workboook_schema(full_schema_config)
     sys.exit(0)
 
 
