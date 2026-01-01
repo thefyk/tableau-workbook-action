@@ -60,21 +60,21 @@ def comment_pr(repo_token, message):
     return True
 
 def update_databricks_workboook_schema(full_schema_config):
-    schema_str = json.dumps(full_schema_config)
+    workbooks_str = json.dumps(full_schema_config)
     databricks_host = os.environ.get('DATABRICKS_HOST')
     databricks_token = os.environ.get('DATABRICKS_TOKEN')
-    update_schema_job_id = os.environ.get('UPDATE_SCHEMA_JOB_ID')
+    update_workbooks_job_id = os.environ.get('UPDATE_WORKBOOKS_JOB_ID')
 
-    if databricks_host and databricks_token and update_schema_job_id:
+    if databricks_host and databricks_token and update_workbooks_job_id:
         import requests
         headers = {
             'Authorization': f'Bearer {databricks_token}',
             'Content-Type': 'application/json'
         }
         payload = {
-            "job_id": int(update_schema_job_id),
+            "job_id": int(update_workbooks_job_id),
             "notebook_params": {
-                "schema": schema_str
+                "workbooks": workbooks_str
             }
         }
         response = requests.post(f'{databricks_host}/api/2.1/jobs/run-now', headers=headers, json=payload)
@@ -247,6 +247,7 @@ def main(args):
     else:
         logging.info("No file changes detected")
 
+    logging.info("Updating Workbook Schema")
     update_databricks_workboook_schema(full_schema_config)
     sys.exit(0)
 
