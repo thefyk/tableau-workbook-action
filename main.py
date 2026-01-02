@@ -42,6 +42,7 @@ def get_full_schema(project_dir):
     full_schema = None
     for schema_file in Path(project_dir).glob("**/*.yml"):
         schema = yaml.full_load(schema_file.open())
+        logging.info(str(schema))
         full_schema = merge(full_schema, schema, strategy=Strategy.ADDITIVE) if full_schema is not None else schema
 
     new_schema = dict({'workbooks':dict()})
@@ -60,6 +61,7 @@ def comment_pr(repo_token, message):
     return True
 
 def update_databricks_workboook_schema(full_schema_config):
+    logging.info(str(full_schema_config))
     workbooks_str = json.dumps(full_schema_config)
     databricks_host = os.environ.get('DATABRICKS_HOST')
     databricks_token = os.environ.get('DATABRICKS_TOKEN')
